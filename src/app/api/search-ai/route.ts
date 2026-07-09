@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+// Groq's free tier needs no credit card and has usable limits (30 req/min,
+// 1,000 req/day on this model) — a better fit for a personal app than
+// Gemini's free tier, which this replaced after repeatedly hitting a 429
+// quota error. Groq's API is OpenAI-compatible.
+const MODEL = "llama-3.3-70b-versatile";
+
 export async function GET(req: NextRequest) {
   const query = req.nextUrl.searchParams.get("q")?.trim();
 
@@ -10,21 +16,13 @@ export async function GET(req: NextRequest) {
   }
 
   const apiKey =
-    process.env.Gemini_API_Key ??
-    process.env.GEMINI_API_KEY ??
-    process.env.GOOGLE_AI_API_KEY ??
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY ??
-    process.env.GOOGLE_API_KEY ??
-    Object.entries(process.env).find(([key]) => key.toLowerCase() === "google_ai_api_key")?.[1] ??
-    Object.entries(process.env).find(([key]) => key.toLowerCase() === "gemini_api_key")?.[1] ??
-    Object.entries(process.env).find(([key]) => key.toLowerCase() === "google_generative_ai_api_key")?.[1] ??
-    Object.entries(process.env).find(([key]) => key.toLowerCase() === "google_api_key")?.[1];
+    process.env.GROQ_API_KEY ??
+    Object.entries(process.env).find(([key]) => key.toLowerCase() === "groq_api_key")?.[1];
 
   if (!apiKey) {
     return NextResponse.json(
       {
-        answer:
-          "Google AI is not configured yet. Add one of GOOGLE_AI_API_KEY, GEMINI_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, or GOOGLE_API_KEY in Vercel to enable real answers for natural-language questions.",
+        answer: "Groq is not configured yet. Add GROQ_API_KEY in Vercel to enable real answers for natural-language questions.",
       },
       { status: 503 }
     );
@@ -33,31 +31,33 @@ export async function GET(req: NextRequest) {
   const prompt = `You are TradingNexus, a concise financial assistant. Answer the user's question about markets, stocks, crypto, commodities, forex, indices, or the site. Keep the response short, practical, and easy to scan. Do not give personalized investment advice.\n\nUser question: ${query}`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 300 },
-        }),
-      }
-    );
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.2,
+        max_tokens: 300,
+      }),
+    });
 
     if (!response.ok) {
       const body = await response.text();
       console.error("search-ai upstream error", response.status, body);
       return NextResponse.json(
         {
-          answer: `Google AI request failed (HTTP ${response.status}): ${body.slice(0, 300)}`,
+          answer: `Groq request failed (HTTP ${response.status}): ${body.slice(0, 300)}`,
         },
         { status: 502 }
       );
     }
 
     const payload = await response.json();
-    const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const text = payload?.choices?.[0]?.message?.content?.trim();
 
     return NextResponse.json({ answer: text || "I couldn't generate an answer right now." });
   } catch (error) {
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
     const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
       {
-        answer: `I hit an issue while contacting Google AI: ${message}`,
+        answer: `I hit an issue while contacting Groq: ${message}`,
       },
       { status: 502 }
     );
