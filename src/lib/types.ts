@@ -4,6 +4,7 @@ export interface WatchlistItem {
   symbol: string; // bare ticker, e.g. "KO"
   exchange: Exchange; // used to build the TradingView symbol, e.g. NYSE:KO
   shares: number; // shares held, used for portfolio total
+  costBasis?: number; // avg price paid per share; optional, powers gain/loss
   addedAt: number;
 }
 

@@ -41,12 +41,15 @@ export function useWatchlist() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items, hydrated]);
 
-  const addStock = useCallback((symbol: string, exchange: Exchange, shares: number) => {
+  const addStock = useCallback((symbol: string, exchange: Exchange, shares: number, costBasis?: number) => {
     const clean = symbol.trim().toUpperCase();
     if (!clean) return;
     setItems((prev) => {
       if (prev.some((i) => i.symbol === clean)) return prev;
-      return [...prev, { symbol: clean, exchange, shares: shares || 0, addedAt: Date.now() }];
+      return [
+        ...prev,
+        { symbol: clean, exchange, shares: shares || 0, costBasis: costBasis || undefined, addedAt: Date.now() },
+      ];
     });
   }, []);
 
@@ -58,5 +61,9 @@ export function useWatchlist() {
     setItems((prev) => prev.map((i) => (i.symbol === symbol ? { ...i, shares } : i)));
   }, []);
 
-  return { items, hydrated, addStock, removeStock, updateShares };
+  const updateCostBasis = useCallback((symbol: string, costBasis: number | undefined) => {
+    setItems((prev) => prev.map((i) => (i.symbol === symbol ? { ...i, costBasis } : i)));
+  }, []);
+
+  return { items, hydrated, addStock, removeStock, updateShares, updateCostBasis };
 }

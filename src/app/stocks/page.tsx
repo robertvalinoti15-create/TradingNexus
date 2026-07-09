@@ -10,7 +10,7 @@ import { SecFilings } from "@/components/SecFilings";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export default function StocksPage() {
-  const { items, hydrated, addStock, removeStock, updateShares } = useWatchlist();
+  const { items, hydrated, addStock, removeStock, updateShares, updateCostBasis } = useWatchlist();
   const symbols = items.map((i) => i.symbol);
   const { quotes, loading } = useQuotes(symbols);
 
@@ -52,6 +52,7 @@ export default function StocksPage() {
               quote={quotes[item.symbol]}
               onRemove={removeStock}
               onSharesChange={updateShares}
+              onCostBasisChange={updateCostBasis}
             />
           ))}
         </div>

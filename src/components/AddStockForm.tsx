@@ -6,11 +6,12 @@ import type { Exchange, Quote } from "@/lib/types";
 export function AddStockForm({
   onAdd,
 }: {
-  onAdd: (symbol: string, exchange: Exchange, shares: number) => void;
+  onAdd: (symbol: string, exchange: Exchange, shares: number, costBasis?: number) => void;
 }) {
   const [symbol, setSymbol] = useState("");
   const [exchange, setExchange] = useState<Exchange>("NYSE");
   const [shares, setShares] = useState("1");
+  const [costBasis, setCostBasis] = useState("");
   const [status, setStatus] = useState<"idle" | "checking" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -35,9 +36,10 @@ export function AddStockForm({
 
       // Prefer the exchange we actually detected from the quote; the dropdown
       // is only a fallback for symbols we can't confidently classify.
-      onAdd(clean, quote.exchange ?? exchange, parseFloat(shares) || 0);
+      onAdd(clean, quote.exchange ?? exchange, parseFloat(shares) || 0, parseFloat(costBasis) || undefined);
       setSymbol("");
       setShares("1");
+      setCostBasis("");
       setStatus("idle");
     } catch {
       setStatus("error");
@@ -83,6 +85,19 @@ export function AddStockForm({
           />
         </label>
 
+        <label className="flex flex-col text-xs text-foreground/50">
+          Cost basis (optional)
+          <input
+            type="number"
+            min={0}
+            step="any"
+            value={costBasis}
+            onChange={(e) => setCostBasis(e.target.value)}
+            placeholder="e.g. 45.20"
+            className="w-28 mt-0.5 px-2 py-1.5 rounded border border-foreground/15 bg-transparent text-sm"
+          />
+        </label>
+
         <button
           type="submit"
           disabled={status === "checking"}
@@ -93,7 +108,9 @@ export function AddStockForm({
       </form>
       {status === "error" && <p className="text-xs text-red-500">{errorMsg}</p>}
       <p className="text-xs text-foreground/40">
-        Exchange is auto-detected from the ticker — the dropdown is only used if that fails.
+        Exchange is auto-detected from the ticker — the dropdown is only used if that fails. Cost
+        basis is optional and only used to track gain/loss — you can also add or edit it later on
+        each holding.
       </p>
     </div>
   );
