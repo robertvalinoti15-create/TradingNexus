@@ -7,6 +7,7 @@ import { TEInstrumentCard } from "@/components/TEInstrumentCard";
 import { TEMoversTable } from "@/components/TEMoversTable";
 import { TEReferenceTable } from "@/components/TEReferenceTable";
 import { FX_TV_SYMBOLS } from "@/lib/fxTvSymbols";
+import { formatCurrencyPairName } from "@/lib/currencyNames";
 import { MarketActivity } from "@/components/MarketActivity";
 
 const DEFAULT_WATCHLIST = [
@@ -19,7 +20,13 @@ const DEFAULT_WATCHLIST = [
 ];
 
 export default function ForexPage() {
-  const { instruments, loading } = useTEInstruments("/api/fx");
+  const { instruments: rawInstruments, loading } = useTEInstruments("/api/fx");
+  // TE labels pairs as bare ticker codes (EURUSD, USDJPY...); show them as
+  // "Euro - US Dollar" instead, everywhere a pair name appears on this page.
+  const instruments = rawInstruments.map((i) => ({
+    ...i,
+    name: formatCurrencyPairName(i.name),
+  }));
   const { paths, hydrated, addInstrument, removeInstrument } = useTEWatchlist(
     "stock-tracker:fx-watchlist",
     DEFAULT_WATCHLIST
