@@ -132,13 +132,13 @@ export default function NewsPage() {
       <section className="max-w-7xl mx-auto px-6 py-8 sm:py-10">
         <div className="flex flex-col gap-6">
           <article className="overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm">
-            <div className="h-72 sm:h-96 w-full overflow-hidden bg-foreground/5">
+            <div className="w-full bg-foreground/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={MARKETS_BANNER_IMAGE.url}
                 alt={MARKETS_BANNER_IMAGE.alt}
                 title={MARKETS_BANNER_IMAGE.credit}
-                className="h-full w-full object-cover object-center"
+                className="block w-full h-auto"
               />
             </div>
 
