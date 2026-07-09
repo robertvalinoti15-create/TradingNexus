@@ -17,6 +17,17 @@ const DESCRIPTIONS: Record<"all" | Market, string> = {
     "Real commodities and futures market news — straight from TradingView's wire, not filtered to your watchlist.",
 };
 
+// TradingView's Timeline widget in feedMode:"market" pulls from a sparse,
+// rarely-updated pool per category. feedMode:"symbol" against a liquid,
+// heavily-covered symbol in each category gets a genuinely live wire instead
+// (verified empirically — market mode was serving multi-year-old articles).
+const REPRESENTATIVE_SYMBOL: Record<Market, string> = {
+  forex: "FX:EURUSD",
+  crypto: "COINBASE:BTCUSD",
+  index: "TVC:SPX",
+  futures: "TVC:GOLD",
+};
+
 export function MarketActivity({ market }: { market?: Market }) {
   const theme = useColorScheme();
 
@@ -33,8 +44,8 @@ export function MarketActivity({ market }: { market?: Market }) {
         scriptSrc="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js"
         height={600}
         config={{
-          feedMode: market ? "market" : "all_symbols",
-          ...(market ? { market } : {}),
+          feedMode: market ? "symbol" : "all_symbols",
+          ...(market ? { symbol: REPRESENTATIVE_SYMBOL[market] } : {}),
           isTransparent: true,
           displayMode: "regular",
           width: "100%",
