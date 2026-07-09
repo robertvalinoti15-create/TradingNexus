@@ -12,16 +12,6 @@ export interface CategoryImage {
   creditUrl: string;
 }
 
-// The NYSE facade photo is portrait (330x495). The banner it sits in is
-// tall enough that object-cover only needs to trim the sides, not the
-// building itself — centered, so the crop is symmetric left/right.
-export const MARKETS_BANNER_IMAGE: CategoryImage = {
-  url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/New_York_Stock_Exchange_Facade_2015.jpg/500px-New_York_Stock_Exchange_Facade_2015.jpg",
-  alt: "The New York Stock Exchange building facade",
-  credit: "New York Stock Exchange, via Wikimedia Commons",
-  creditUrl: "https://en.wikipedia.org/wiki/New_York_Stock_Exchange",
-};
-
 export const NEWS_CATEGORY_IMAGES: Record<string, CategoryImage> = {
   tech: {
     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Silicon_Valley%2C_facing_southward_towards_Downtown_San_Jose%2C_2014_%28cropped%29.jpg/500px-Silicon_Valley%2C_facing_southward_towards_Downtown_San_Jose%2C_2014_%28cropped%29.jpg",

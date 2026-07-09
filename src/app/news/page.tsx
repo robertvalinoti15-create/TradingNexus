@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { formatRelative } from "@/lib/formatRelative";
-import { MARKETS_BANNER_IMAGE, NEWS_CATEGORY_IMAGES } from "@/lib/newsCategoryImages";
+import { NEWS_CATEGORY_IMAGES } from "@/lib/newsCategoryImages";
 import type { NewsItem } from "@/lib/newsTypes";
 
 const FEEDS = [
@@ -131,18 +131,7 @@ export default function NewsPage() {
 
       <section className="max-w-7xl mx-auto px-6 py-8 sm:py-10">
         <div className="flex flex-col gap-6">
-          <article className="overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm">
-            <div className="w-full bg-foreground/5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={MARKETS_BANNER_IMAGE.url}
-                alt={MARKETS_BANNER_IMAGE.alt}
-                title={MARKETS_BANNER_IMAGE.credit}
-                className="block w-full h-auto"
-              />
-            </div>
-
-            <div className="p-5 sm:p-6">
+          <article className="rounded-2xl border border-foreground/10 bg-card p-5 sm:p-6 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-foreground/45">Top story</p>
@@ -189,7 +178,6 @@ export default function NewsPage() {
             ) : (
               <p className="mt-6 text-sm text-foreground/50">No headlines available yet.</p>
             )}
-            </div>
           </article>
 
           <div className="grid gap-4 lg:grid-cols-2">
