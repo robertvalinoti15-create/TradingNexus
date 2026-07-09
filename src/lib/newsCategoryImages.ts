@@ -12,13 +12,27 @@ export interface CategoryImage {
   creditUrl: string;
 }
 
-export const NEWS_CATEGORY_IMAGES: Record<string, CategoryImage> = {
-  markets: {
+// The NYSE facade photo is portrait (330x495) — stretched across a single
+// wide banner it crops down to a tight, awkward slice of columns. Pairing
+// it with a naturally landscape photo (the trading floor) in a two-up
+// split means each image only needs to fill a half-width slot, so neither
+// gets cropped as aggressively.
+export const MARKETS_BANNER_IMAGES: CategoryImage[] = [
+  {
     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/New_York_Stock_Exchange_Facade_2015.jpg/500px-New_York_Stock_Exchange_Facade_2015.jpg",
     alt: "The New York Stock Exchange building facade",
     credit: "New York Stock Exchange, via Wikimedia Commons",
     creditUrl: "https://en.wikipedia.org/wiki/New_York_Stock_Exchange",
   },
+  {
+    url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/NYSE-floor.jpg/500px-NYSE-floor.jpg",
+    alt: "Traders on the New York Stock Exchange trading floor",
+    credit: "NYSE trading floor, via Wikimedia Commons",
+    creditUrl: "https://en.wikipedia.org/wiki/Open_outcry",
+  },
+];
+
+export const NEWS_CATEGORY_IMAGES: Record<string, CategoryImage> = {
   tech: {
     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Silicon_Valley%2C_facing_southward_towards_Downtown_San_Jose%2C_2014_%28cropped%29.jpg/500px-Silicon_Valley%2C_facing_southward_towards_Downtown_San_Jose%2C_2014_%28cropped%29.jpg",
     alt: "Aerial view of Silicon Valley",

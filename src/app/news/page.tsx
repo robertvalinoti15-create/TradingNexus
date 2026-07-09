@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { formatRelative } from "@/lib/formatRelative";
-import { NEWS_CATEGORY_IMAGES } from "@/lib/newsCategoryImages";
+import { MARKETS_BANNER_IMAGES, NEWS_CATEGORY_IMAGES } from "@/lib/newsCategoryImages";
 import type { NewsItem } from "@/lib/newsTypes";
 
 const FEEDS = [
@@ -132,14 +132,17 @@ export default function NewsPage() {
       <section className="max-w-7xl mx-auto px-6 py-8 sm:py-10">
         <div className="flex flex-col gap-6">
           <article className="overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm">
-            <div className="h-40 sm:h-56 w-full overflow-hidden bg-foreground/5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={NEWS_CATEGORY_IMAGES.markets.url}
-                alt={NEWS_CATEGORY_IMAGES.markets.alt}
-                title={NEWS_CATEGORY_IMAGES.markets.credit}
-                className="h-full w-full object-cover"
-              />
+            <div className="grid grid-cols-2 h-40 sm:h-56 w-full overflow-hidden bg-foreground/5">
+              {MARKETS_BANNER_IMAGES.map((image) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={image.url}
+                  src={image.url}
+                  alt={image.alt}
+                  title={image.credit}
+                  className="h-full w-full object-cover"
+                />
+              ))}
             </div>
 
             <div className="p-5 sm:p-6">
