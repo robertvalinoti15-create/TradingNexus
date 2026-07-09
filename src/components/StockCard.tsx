@@ -82,7 +82,7 @@ export function StockCard({
 
       <div>
         <h4 className="text-xs uppercase tracking-wide text-foreground/40 mb-2">Recent news</h4>
-        <StockNews tvSymbol={tvSymbol} />
+        <StockNews name={quote?.name ?? item.symbol} />
       </div>
     </section>
   );
