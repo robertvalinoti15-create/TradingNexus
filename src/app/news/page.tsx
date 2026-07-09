@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { formatRelative } from "@/lib/formatRelative";
+import { NEWS_CATEGORY_IMAGES } from "@/lib/newsCategoryImages";
 import type { NewsItem } from "@/lib/newsTypes";
 
 const FEEDS = [
@@ -130,7 +131,18 @@ export default function NewsPage() {
 
       <section className="max-w-7xl mx-auto px-6 py-8 sm:py-10">
         <div className="flex flex-col gap-6">
-          <article className="rounded-2xl border border-foreground/10 bg-card p-5 sm:p-6 shadow-sm">
+          <article className="overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm">
+            <div className="h-40 sm:h-56 w-full overflow-hidden bg-foreground/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={NEWS_CATEGORY_IMAGES.markets.url}
+                alt={NEWS_CATEGORY_IMAGES.markets.alt}
+                title={NEWS_CATEGORY_IMAGES.markets.credit}
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div className="p-5 sm:p-6">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-foreground/45">Top story</p>
@@ -177,14 +189,28 @@ export default function NewsPage() {
             ) : (
               <p className="mt-6 text-sm text-foreground/50">No headlines available yet.</p>
             )}
+            </div>
           </article>
 
           <div className="grid gap-4 lg:grid-cols-2">
             {sections
               .filter((section) => section.key !== "markets")
-              .map((section) => (
+              .map((section) => {
+                const image = NEWS_CATEGORY_IMAGES[section.key];
+                return (
                 <article key={section.key} className="rounded-2xl border border-foreground/10 bg-card p-4 shadow-sm">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    {image && (
+                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-foreground/5">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={image.url}
+                          alt={image.alt}
+                          title={image.credit}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
                     <div>
                       <h3 className="font-semibold">{section.label}</h3>
                       <p className="mt-0.5 text-xs text-foreground/50">{section.blurb}</p>
@@ -207,7 +233,8 @@ export default function NewsPage() {
                     </ul>
                   )}
                 </article>
-              ))}
+                );
+              })}
           </div>
         </div>
       </section>
