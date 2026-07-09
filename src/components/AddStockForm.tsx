@@ -63,7 +63,7 @@ export function AddStockForm({
           <select
             value={exchange}
             onChange={(e) => setExchange(e.target.value as Exchange)}
-            className="w-32 mt-0.5 px-2 py-1.5 rounded border border-foreground/15 bg-transparent text-sm"
+            className="w-32 mt-0.5 px-2 py-1.5 rounded border border-foreground/15 bg-white text-black text-sm"
           >
             <option value="NYSE">NYSE</option>
             <option value="NASDAQ">NASDAQ</option>

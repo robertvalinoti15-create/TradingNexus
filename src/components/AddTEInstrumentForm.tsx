@@ -42,7 +42,7 @@ export function AddTEInstrumentForm({
         <select
           value={selected}
           onChange={(e) => setSelected(e.target.value)}
-          className="w-56 mt-0.5 px-2 py-1.5 rounded border border-foreground/15 bg-transparent text-sm"
+          className="w-56 mt-0.5 px-2 py-1.5 rounded border border-foreground/15 bg-white text-black text-sm"
         >
           <option value="" disabled>
             {available.length === 0 ? "Loading…" : `Select a ${label.toLowerCase()}`}

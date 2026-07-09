@@ -7,6 +7,7 @@ import { AddStockForm } from "@/components/AddStockForm";
 import { StockCard } from "@/components/StockCard";
 import { MarketActivity } from "@/components/MarketActivity";
 import { SecFilings } from "@/components/SecFilings";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export default function StocksPage() {
   const { items, hydrated, addStock, removeStock, updateShares } = useWatchlist();
@@ -20,7 +21,11 @@ export default function StocksPage() {
   return (
     <main className="max-w-5xl w-full mx-auto px-6 py-10 flex flex-col gap-10">
       <header>
-        <h1 className="text-2xl font-semibold">Stocks</h1>
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" className="w-6 h-6" />
+          <h1 className="text-2xl font-semibold">Stocks</h1>
+        </div>
         <p className="text-sm text-foreground/50 mt-1">
           Your watchlist, charts, and what&apos;s actually moving the market — sourced live, not
           simulated.
@@ -56,10 +61,16 @@ export default function StocksPage() {
 
       <SecFilings symbols={symbols} />
 
-      <footer className="text-xs text-foreground/30 pb-6">
-        Quotes via Yahoo Finance (unofficial, delayed). Charts &amp; news via TradingView.
-        Company overviews via Wikipedia. Insider &amp; institutional data via SEC EDGAR. For
-        personal use — not investment advice.
+      <footer className="pb-6">
+        <SiteFooter
+          note={
+            <>
+              Quotes via Yahoo Finance (unofficial, delayed). Charts &amp; news via TradingView.
+              Company overviews via Wikipedia. Insider &amp; institutional data via SEC EDGAR. For
+              personal use — not investment advice.
+            </>
+          }
+        />
       </footer>
     </main>
   );

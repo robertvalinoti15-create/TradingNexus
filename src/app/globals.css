@@ -5,6 +5,12 @@
   --foreground: #171717;
   --brand-blue: #2563eb;
   --brand-red: #dc2626;
+  /* Without this, browsers paint native controls (the <select> dropdown
+     list, scrollbars, etc.) with light-theme defaults regardless of the
+     page's own dark colors, so light text on a dark page becomes light
+     text on a white dropdown — unreadable. This lets each control pick
+     light or dark to match prefers-color-scheme automatically. */
+  color-scheme: light dark;
 }
 
 @theme inline {
@@ -12,8 +18,8 @@
   --color-foreground: var(--foreground);
   --color-brand-blue: var(--brand-blue);
   --color-brand-red: var(--brand-red);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Times New Roman", Times, serif;
+  --font-mono: "Times New Roman", Times, serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,5 +34,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Times New Roman", Times, serif;
 }

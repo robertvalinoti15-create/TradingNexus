@@ -8,6 +8,7 @@ import { TEMoversTable } from "@/components/TEMoversTable";
 import { TEReferenceTable } from "@/components/TEReferenceTable";
 import { COMMODITY_TV_SYMBOLS } from "@/lib/commodityTvSymbols";
 import { MarketActivity } from "@/components/MarketActivity";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const DEFAULT_WATCHLIST = [
   "/commodity/crude-oil",
@@ -36,7 +37,11 @@ export default function CommoditiesPage() {
   return (
     <main className="max-w-5xl w-full mx-auto px-6 py-10 flex flex-col gap-10">
       <header>
-        <h1 className="text-2xl font-semibold">Commodities</h1>
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" className="w-6 h-6" />
+          <h1 className="text-2xl font-semibold">Commodities</h1>
+        </div>
         <p className="text-sm text-foreground/50 mt-1">
           Charts, movers, and market news for the commodities you choose — sourced live from
           TradingEconomics, with Investopedia overviews.
@@ -90,9 +95,15 @@ export default function CommoditiesPage() {
         </div>
       </section>
 
-      <footer className="text-xs text-foreground/30 pb-6">
-        Prices, charts, and news via TradingEconomics.com. Overviews via Wikipedia, with links
-        out to Investopedia. For personal use — not investment advice.
+      <footer className="pb-6">
+        <SiteFooter
+          note={
+            <>
+              Prices, charts, and news via TradingEconomics.com. Overviews via Wikipedia, with
+              links out to Investopedia. For personal use — not investment advice.
+            </>
+          }
+        />
       </footer>
     </main>
   );

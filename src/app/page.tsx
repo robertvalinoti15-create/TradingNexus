@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HeroChartBackground } from "@/components/HeroChartBackground";
 import { MarketMovers } from "@/components/MarketMovers";
+import { SiteFooter } from "@/components/SiteFooter";
 import {
   StocksIcon,
   CommoditiesIcon,
@@ -127,9 +128,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="max-w-5xl w-full mx-auto px-6 pb-10 text-xs text-foreground/30">
-        Data via Yahoo Finance, TradingEconomics.com, TradingView, Wikipedia, Investopedia, and
-        SEC EDGAR. For personal use — not investment advice.
+      <footer className="max-w-5xl w-full mx-auto px-6 pb-10">
+        <SiteFooter
+          note={
+            <>
+              Data via Yahoo Finance, TradingEconomics.com, TradingView, Wikipedia, Investopedia,
+              and SEC EDGAR. For personal use — not investment advice.
+            </>
+          }
+        />
       </footer>
     </main>
   );
