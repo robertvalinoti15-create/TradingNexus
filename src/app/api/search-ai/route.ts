@@ -46,7 +46,14 @@ export async function GET(req: NextRequest) {
     );
 
     if (!response.ok) {
-      throw new Error(`Google AI request failed: ${response.status}`);
+      const body = await response.text();
+      console.error("search-ai upstream error", response.status, body);
+      return NextResponse.json(
+        {
+          answer: `Google AI request failed (HTTP ${response.status}): ${body.slice(0, 300)}`,
+        },
+        { status: 502 }
+      );
     }
 
     const payload = await response.json();
@@ -55,10 +62,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ answer: text || "I couldn't generate an answer right now." });
   } catch (error) {
     console.error("search-ai error", error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
       {
-        answer:
-          "I hit a temporary issue while contacting Google AI. Please try again in a moment.",
+        answer: `I hit an issue while contacting Google AI: ${message}`,
       },
       { status: 502 }
     );
