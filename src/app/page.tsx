@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HeroChartBackground } from "@/components/HeroChartBackground";
+import { MarketMovers } from "@/components/MarketMovers";
 import {
   StocksIcon,
   CommoditiesIcon,
@@ -114,6 +115,15 @@ export default function HomePage() {
               <p className="text-sm text-foreground/60 mt-2 leading-relaxed">{prop.body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="border-t border-foreground/10">
+        <div className="max-w-5xl w-full mx-auto px-6 py-16">
+          <h2 className="text-lg font-semibold mb-4">Biggest movers in the market</h2>
+          <div className="border border-foreground/10 rounded-xl p-4">
+            <MarketMovers />
+          </div>
         </div>
       </section>
 

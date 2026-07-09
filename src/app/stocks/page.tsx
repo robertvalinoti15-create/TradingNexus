@@ -5,7 +5,6 @@ import { useQuotes } from "@/lib/useQuotes";
 import { PortfolioTotal } from "@/components/PortfolioTotal";
 import { AddStockForm } from "@/components/AddStockForm";
 import { StockCard } from "@/components/StockCard";
-import { MarketMovers } from "@/components/MarketMovers";
 import { MarketActivity } from "@/components/MarketActivity";
 import { SecFilings } from "@/components/SecFilings";
 
@@ -50,13 +49,6 @@ export default function StocksPage() {
               onSharesChange={updateShares}
             />
           ))}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-lg font-semibold mb-4">Biggest movers in the market</h2>
-        <div className="border border-foreground/10 rounded-xl p-4">
-          <MarketMovers />
         </div>
       </section>
 
