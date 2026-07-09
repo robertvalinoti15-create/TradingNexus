@@ -57,7 +57,7 @@ export function TEInstrumentCard({
 
       <div>
         <h4 className="text-xs uppercase tracking-wide text-foreground/40 mb-2">Recent news</h4>
-        <TENewsList path={instrument.path} />
+        <TENewsList name={instrument.name} path={instrument.path} />
       </div>
     </section>
   );

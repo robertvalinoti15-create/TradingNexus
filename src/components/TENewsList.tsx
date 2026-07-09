@@ -1,27 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { TENewsItem } from "@/lib/teTypes";
+import { useMarketNews } from "@/lib/useMarketNews";
+import { formatRelative } from "@/lib/formatRelative";
 
-export function TENewsList({ path }: { path: string }) {
-  const [items, setItems] = useState<TENewsItem[] | null>(null);
+// TradingEconomics' own wire is empty for a lot of individual instruments
+// (e.g. every crypto pair except Bitcoin), so this mixes in Google News too
+// — the same two-provider approach used by the Market Activity section.
+// "${name} price" disambiguates generic English words (e.g. "Wheat" alone
+// pulls up an NFL player and a Denver suburb) without hurting already-
+// specific names like "Bitcoin" or "Nikkei 225" (verified empirically).
+export function TENewsList({ name, path }: { name: string; path: string }) {
+  const { items, loading } = useMarketNews(`${name} price`, path);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`/api/te-news?path=${encodeURIComponent(path)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (!cancelled) setItems(data.items ?? []);
-      })
-      .catch(() => {
-        if (!cancelled) setItems([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [path]);
-
-  if (items === null) {
+  if (loading && items.length === 0) {
     return <p className="text-sm text-foreground/50">Loading news...</p>;
   }
 
@@ -32,7 +23,7 @@ export function TENewsList({ path }: { path: string }) {
   return (
     <ul className="flex flex-col gap-3">
       {items.map((item, i) => (
-        <li key={i}>
+        <li key={`${item.url}-${i}`}>
           <a
             href={item.url}
             target="_blank"
@@ -41,7 +32,11 @@ export function TENewsList({ path }: { path: string }) {
           >
             {item.headline}
           </a>
-          <p className="text-xs text-foreground/50 mt-0.5">{item.date}</p>
+          <div className="flex items-center gap-2 mt-0.5 text-xs text-foreground/50">
+            <span className="font-medium text-foreground/70">{item.source}</span>
+            <span>·</span>
+            <span>{formatRelative(item.publishedAt)}</span>
+          </div>
           {item.description && (
             <p className="text-sm text-foreground/70 mt-1 leading-relaxed line-clamp-3">
               {item.description}
