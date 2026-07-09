@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HeroChartBackground } from "@/components/HeroChartBackground";
 import { MarketMovers } from "@/components/MarketMovers";
+import { SearchBox } from "@/components/SearchBox";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
   StocksIcon,
@@ -72,6 +73,9 @@ export default function HomePage() {
             crypto, and world indices — with live prices, real charts, honest explanations, and
             the news actually moving them. No paywalls, no noise, no simulated data.
           </p>
+          <div className="w-full max-w-2xl">
+            <SearchBox />
+          </div>
           <Link
             href="/stocks"
             className="px-5 py-2.5 rounded bg-brand-blue text-white text-sm font-medium hover:opacity-90 transition-opacity"
