@@ -12,25 +12,15 @@ export interface CategoryImage {
   creditUrl: string;
 }
 
-// The NYSE facade photo is portrait (330x495) — stretched across a single
-// wide banner it crops down to a tight, awkward slice of columns. Pairing
-// it with a naturally landscape photo (the trading floor) in a two-up
-// split means each image only needs to fill a half-width slot, so neither
-// gets cropped as aggressively.
-export const MARKETS_BANNER_IMAGES: CategoryImage[] = [
-  {
-    url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/New_York_Stock_Exchange_Facade_2015.jpg/500px-New_York_Stock_Exchange_Facade_2015.jpg",
-    alt: "The New York Stock Exchange building facade",
-    credit: "New York Stock Exchange, via Wikimedia Commons",
-    creditUrl: "https://en.wikipedia.org/wiki/New_York_Stock_Exchange",
-  },
-  {
-    url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/NYSE-floor.jpg/500px-NYSE-floor.jpg",
-    alt: "Traders on the New York Stock Exchange trading floor",
-    credit: "NYSE trading floor, via Wikimedia Commons",
-    creditUrl: "https://en.wikipedia.org/wiki/Open_outcry",
-  },
-];
+// The NYSE facade photo is portrait (330x495). The banner it sits in is
+// tall enough that object-cover only needs to trim the sides, not the
+// building itself — centered, so the crop is symmetric left/right.
+export const MARKETS_BANNER_IMAGE: CategoryImage = {
+  url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/New_York_Stock_Exchange_Facade_2015.jpg/500px-New_York_Stock_Exchange_Facade_2015.jpg",
+  alt: "The New York Stock Exchange building facade",
+  credit: "New York Stock Exchange, via Wikimedia Commons",
+  creditUrl: "https://en.wikipedia.org/wiki/New_York_Stock_Exchange",
+};
 
 export const NEWS_CATEGORY_IMAGES: Record<string, CategoryImage> = {
   tech: {
