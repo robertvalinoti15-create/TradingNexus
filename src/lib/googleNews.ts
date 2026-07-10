@@ -42,6 +42,11 @@ export async function getGoogleNews(query: string): Promise<NewsItem[]> {
     const parsed = pubDate ? new Date(pubDate) : null;
     const publishedAt = parsed && !Number.isNaN(parsed.getTime()) ? parsed.toISOString() : new Date().toISOString();
 
+    const rawDescription = $el.find("description").first().text().trim();
+    const descDoc = rawDescription ? cheerio.load(rawDescription) : null;
+    const imageUrl = descDoc?.("img").first().attr("src")?.trim();
+    const description = descDoc?.root().text().replace(/\s+/g, " ").trim();
+
     if (!headline || !link) return;
 
     items.push({
@@ -50,6 +55,8 @@ export async function getGoogleNews(query: string): Promise<NewsItem[]> {
       source,
       provider: "Google News",
       publishedAt,
+      description: description || undefined,
+      imageUrl,
     });
   });
 

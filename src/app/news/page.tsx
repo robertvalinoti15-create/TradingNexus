@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { formatRelative } from "@/lib/formatRelative";
@@ -38,6 +39,27 @@ const FEEDS = [
     blurb: "Energy, metals, and agriculture moving the global economy.",
   },
 ] as const;
+
+function ArticleImage({
+  src,
+  alt,
+  className,
+  fallbackSrc,
+}: {
+  src?: string;
+  alt: string;
+  className: string;
+  fallbackSrc?: string;
+}) {
+  const [errored, setErrored] = useState(false);
+  const resolved = !errored && src ? src : fallbackSrc;
+  if (!resolved) return null;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={resolved} alt={alt} className={className} onError={() => setErrored(true)} />
+  );
+}
 
 type FeedState = {
   key: string;
@@ -122,6 +144,20 @@ export default function NewsPage() {
         <div className="max-w-7xl mx-auto px-6 py-4 sm:py-5">
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Live Market Newsroom</h1>
+            <div className="mt-1 flex flex-wrap gap-2 text-xs sm:text-sm">
+              <Link
+                href="/news"
+                className="rounded-full border border-brand-blue/40 bg-brand-blue/10 px-3 py-1.5 font-medium text-brand-blue"
+              >
+                Market News
+              </Link>
+              <Link
+                href="/news/world"
+                className="rounded-full border border-foreground/15 bg-card px-3 py-1.5 font-medium text-foreground/70 transition-colors hover:border-brand-blue/40 hover:text-brand-blue"
+              >
+                World News
+              </Link>
+            </div>
             <div className="rounded-full border border-foreground/10 px-3 py-2 text-sm text-foreground/60 w-fit">
               Auto-refreshing every minute
             </div>
@@ -150,6 +186,12 @@ export default function NewsPage() {
                   rel="noopener noreferrer"
                   className="mt-6 block rounded-xl border border-foreground/10 bg-background/60 p-4 hover:border-brand-blue/40 transition-colors"
                 >
+                  <ArticleImage
+                    key={featured.imageUrl || featured.url}
+                    src={featured.imageUrl}
+                    alt={featured.headline}
+                    className="mb-3 aspect-video w-full rounded-lg object-cover"
+                  />
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-blue">{featured.source}</p>
                   <h3 className="mt-2 text-lg font-semibold leading-snug">{featured.headline}</h3>
                   {featured.description ? (
@@ -161,14 +203,22 @@ export default function NewsPage() {
                 <div style={{ maxHeight: "24rem", overflowY: "auto" }} className="mt-5 pr-2">
                   <ul className="flex flex-col gap-3">
                     {marketItems.map((item, index) => (
-                      <li key={`${item.url}-${index}`} className="border-b border-foreground/10 pb-3 last:border-none last:pb-0">
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover:underline">
-                          {item.headline}
-                        </a>
-                        <div className="mt-1 flex items-center gap-2 text-xs text-foreground/45">
-                          <span>{item.source}</span>
-                          <span>·</span>
-                          <span>{formatRelative(item.publishedAt)}</span>
+                      <li key={`${item.url}-${index}`} className="flex items-start gap-3 border-b border-foreground/10 pb-3 last:border-none last:pb-0">
+                        <ArticleImage
+                          key={item.imageUrl || item.url}
+                          src={item.imageUrl}
+                          alt=""
+                          className="h-12 w-12 shrink-0 rounded-md object-cover"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover:underline">
+                            {item.headline}
+                          </a>
+                          <div className="mt-1 flex items-center gap-2 text-xs text-foreground/45">
+                            <span>{item.source}</span>
+                            <span>·</span>
+                            <span>{formatRelative(item.publishedAt)}</span>
+                          </div>
                         </div>
                       </li>
                     ))}

@@ -28,7 +28,24 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const prompt = `You are TradingNexus, a concise financial assistant. Answer the user's question about markets, stocks, crypto, commodities, forex, indices, or the site. Keep the response short, practical, and easy to scan. Do not give personalized investment advice.\n\nUser question: ${query}`;
+  const prompt = `You are TradingNexus, a concise financial assistant. Answer the user's question about markets, stocks, crypto, commodities, forex, indices, or this site. Keep your response practical, short, and scannable. Do not give personalized investment advice.
+
+Use exactly this structure:
+Summary:
+- One sentence
+
+Key drivers:
+- 2 to 4 bullet points
+
+Risks:
+- 1 to 3 bullet points
+
+What to watch next:
+- 2 to 3 bullet points
+
+Do not include markdown bold, code fences, or disclaimers beyond "Not investment advice." as a final short line.
+
+User question: ${query}`;
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {

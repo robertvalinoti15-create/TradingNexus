@@ -9,4 +9,6 @@ export interface NewsItem {
   provider: "Google News" | "TradingEconomics";
   publishedAt: string; // ISO 8601
   description?: string;
+  imageUrl?: string;
+  fullArticle?: string;
 }
