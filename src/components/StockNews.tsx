@@ -9,15 +9,26 @@ import { formatRelative } from "@/lib/formatRelative";
 // equities, so this is Google News alone — still genuinely multi-outlet,
 // unlike the single embedded TradingView feed it replaces, and it stays
 // fresh where that widget didn't for less-covered tickers.
+function isToday(iso: string): boolean {
+  const d = new Date(iso);
+  const now = new Date();
+  return (
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  );
+}
+
 export function StockNews({ name }: { name: string }) {
-  const { items, loading } = useMarketNews(`${name} stock`);
+  const { items: allItems, loading } = useMarketNews(`${name} stock`);
+  const items = allItems.filter((item) => isToday(item.publishedAt)).slice(0, 3);
 
   if (loading && items.length === 0) {
     return <p className="text-sm text-foreground/50">Loading news...</p>;
   }
 
   if (items.length === 0) {
-    return <p className="text-sm text-foreground/50">No recent news found.</p>;
+    return <p className="text-sm text-foreground/50">No news from today yet.</p>;
   }
 
   return (
