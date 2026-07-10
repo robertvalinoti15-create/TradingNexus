@@ -8,6 +8,11 @@ function fmtPercent(n: number | null) {
   return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
 }
 
+// Numerco runs a live bilateral trading venue for uranium/nuclear fuel
+// (spot pricing, forward curves, trade history) that TradingEconomics
+// doesn't cover — worth linking out to for these two instruments only.
+const NUMERCO_PATHS = new Set(["/commodity/uranium", "/commodity/nuclear"]);
+
 export function TEInstrumentCard({
   instrument,
   tvSymbol,
@@ -49,6 +54,20 @@ export function TEInstrumentCard({
       </header>
 
       <TEChart symbol={instrument.symbol} path={instrument.path} tvSymbol={tvSymbol} />
+
+      {NUMERCO_PATHS.has(instrument.path) && (
+        <div className="rounded-lg border border-foreground/10 bg-background/40 p-3">
+          <h4 className="text-xs uppercase tracking-wide text-foreground/40 mb-1">Live uranium market</h4>
+          <a
+            href="https://numerco.com/dashboard/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-brand-blue hover:underline"
+          >
+            View live spot pricing, forward curves, and trade data on Numerco →
+          </a>
+        </div>
+      )}
 
       <div>
         <h4 className="text-xs uppercase tracking-wide text-foreground/40 mb-2">About</h4>
