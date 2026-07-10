@@ -152,3 +152,107 @@ export async function getSportsScores(league: LeagueKey): Promise<SportsGame[]> 
   cache.set(league, { at: Date.now(), data: games });
   return games;
 }
+
+// UFC events are a single card of individual bouts rather than a
+// home/away team matchup, so they get their own shape instead of being
+// forced into SportsGame.
+export interface UfcFighter {
+  name: string;
+  flag?: string;
+  winner: boolean;
+}
+
+export interface UfcBout {
+  id: string;
+  weightClass: string;
+  state: "pre" | "in" | "post";
+  status: string;
+  fighter1: UfcFighter;
+  fighter2: UfcFighter;
+}
+
+export interface UfcCard {
+  name: string;
+  startTime: string;
+  bouts: UfcBout[];
+}
+
+interface EspnAthlete {
+  displayName?: string;
+  flag?: { href?: string };
+}
+
+interface EspnMmaCompetitor {
+  order?: number;
+  winner?: boolean;
+  athlete?: EspnAthlete;
+}
+
+interface EspnMmaCompetition {
+  type?: { abbreviation?: string };
+  status?: { type?: { state?: string; shortDetail?: string } };
+  competitors?: EspnMmaCompetitor[];
+}
+
+interface EspnMmaEvent {
+  id?: string | number;
+  name?: string;
+  date?: string;
+  competitions?: EspnMmaCompetition[];
+}
+
+interface EspnMmaScoreboardResponse {
+  events?: EspnMmaEvent[];
+}
+
+let ufcCache: { at: number; data: UfcCard[] } = { at: 0, data: [] };
+
+function toFighter(competitor: EspnMmaCompetitor | undefined): UfcFighter {
+  return {
+    name: competitor?.athlete?.displayName ?? "TBD",
+    flag: competitor?.athlete?.flag?.href,
+    winner: Boolean(competitor?.winner),
+  };
+}
+
+export async function getUfcCards(): Promise<UfcCard[]> {
+  if (ufcCache.data.length > 0 && Date.now() - ufcCache.at < CACHE_TTL_MS) return ufcCache.data;
+
+  const url = "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard";
+  const res = await fetch(url, { headers: { "User-Agent": ESPN_UA }, cache: "no-store" });
+  if (!res.ok) throw new Error(`ESPN fetch failed: ${res.status}`);
+  const json = (await res.json()) as EspnMmaScoreboardResponse;
+
+  const cards: UfcCard[] = (json.events ?? [])
+    .filter((event): event is EspnMmaEvent & { id: string | number; date: string; name: string } =>
+      Boolean(event.id && event.date && event.name)
+    )
+    .map((event) => {
+      const bouts = (event.competitions ?? [])
+        .map((competition, i): UfcBout | null => {
+          const competitors = competition.competitors ?? [];
+          const fighter1 = competitors.find((c) => c.order === 1) ?? competitors[0];
+          const fighter2 = competitors.find((c) => c.order === 2) ?? competitors[1];
+          if (!fighter1 || !fighter2) return null;
+
+          const state = competition.status?.type?.state;
+          return {
+            id: `${event.id}-${i}`,
+            weightClass: competition.type?.abbreviation ?? "",
+            state: state === "in" || state === "post" ? state : "pre",
+            status: competition.status?.type?.shortDetail ?? "",
+            fighter1: toFighter(fighter1),
+            fighter2: toFighter(fighter2),
+          };
+        })
+        .filter((bout): bout is UfcBout => bout !== null)
+        // ESPN lists early prelims first and the main event last; flip so
+        // the marquee fights show at the top of the card.
+        .reverse();
+
+      return { name: event.name, startTime: event.date, bouts };
+    });
+
+  ufcCache = { at: Date.now(), data: cards };
+  return cards;
+}

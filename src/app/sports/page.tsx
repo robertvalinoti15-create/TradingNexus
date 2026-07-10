@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { formatRelative } from "@/lib/formatRelative";
 import type { NewsItem } from "@/lib/newsTypes";
-import type { SportsGame } from "@/lib/sportsScores";
+import type { SportsGame, UfcBout, UfcCard, UfcFighter } from "@/lib/sportsScores";
 
 const LEAGUES = [
   { key: "nfl", label: "NFL", query: "NFL football" },
@@ -13,6 +13,7 @@ const LEAGUES = [
   { key: "soccer", label: "Soccer", query: "soccer football" },
   { key: "ncaaf", label: "NCAAF", query: "college football" },
   { key: "mlb", label: "MLB", query: "MLB baseball" },
+  { key: "ufc", label: "UFC", query: "UFC MMA" },
 ] as const;
 
 type LeagueKey = (typeof LEAGUES)[number]["key"];
@@ -55,14 +56,69 @@ function ScoreCard({ game }: { game: SportsGame }) {
   );
 }
 
+function FighterName({ fighter, isFinal, align }: { fighter: UfcFighter; isFinal: boolean; align?: "right" }) {
+  return (
+    <div className={`flex min-w-0 items-center gap-1.5 ${align === "right" ? "flex-row-reverse text-right" : ""}`}>
+      {fighter.flag ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={fighter.flag} alt="" className="h-3.5 w-5 shrink-0 rounded-sm object-cover" />
+      ) : null}
+      <span className={`truncate text-sm ${isFinal && fighter.winner ? "font-semibold" : "font-medium text-foreground/80"}`}>
+        {fighter.name}
+      </span>
+    </div>
+  );
+}
+
+function BoutRow({ bout }: { bout: UfcBout }) {
+  const isLive = bout.state === "in";
+  const isFinal = bout.state === "post";
+
+  return (
+    <li className="rounded-lg border border-foreground/10 bg-background/40 p-3">
+      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-foreground/40">{bout.weightClass}</p>
+      <div className="flex items-center justify-between gap-2">
+        <FighterName fighter={bout.fighter1} isFinal={isFinal} />
+        <span className="shrink-0 px-2 text-xs text-foreground/40">vs</span>
+        <FighterName fighter={bout.fighter2} isFinal={isFinal} align="right" />
+      </div>
+      <p className={`mt-2 text-xs ${isLive ? "font-medium text-brand-red" : "text-foreground/45"}`}>{bout.status}</p>
+    </li>
+  );
+}
+
+function UfcCardBlock({ card }: { card: UfcCard }) {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold">{card.name}</h3>
+      <p className="mb-2 text-xs text-foreground/45">
+        {new Date(card.startTime).toLocaleString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        })}
+      </p>
+      <ul className="flex flex-col gap-2">
+        {card.bouts.map((bout) => (
+          <BoutRow key={bout.id} bout={bout} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function SportsPage() {
   const [league, setLeague] = useState<LeagueKey>("nfl");
   const [games, setGames] = useState<SportsGame[]>([]);
+  const [ufcCards, setUfcCards] = useState<UfcCard[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingNews, setLoadingNews] = useState(true);
 
   const activeLeague = useMemo(() => LEAGUES.find((l) => l.key === league) ?? LEAGUES[0], [league]);
+  const isUfc = activeLeague.key === "ufc";
 
   useEffect(() => {
     let cancelled = false;
@@ -71,14 +127,22 @@ export default function SportsPage() {
       setLoadingGames(true);
       setLoadingNews(true);
 
+      const scoresUrl = league === "ufc" ? "/api/ufc-card" : `/api/sports-scores?league=${league}`;
+
       const [scoresRes, newsRes] = await Promise.allSettled([
-        fetch(`/api/sports-scores?league=${league}`, { cache: "no-store" }).then((r) => r.json()),
+        fetch(scoresUrl, { cache: "no-store" }).then((r) => r.json()),
         fetch(`/api/market-news?q=${encodeURIComponent(activeLeague.query)}`, { cache: "no-store" }).then((r) => r.json()),
       ]);
 
       if (cancelled) return;
 
-      setGames(scoresRes.status === "fulfilled" ? ((scoresRes.value.games ?? []) as SportsGame[]) : []);
+      if (league === "ufc") {
+        setUfcCards(scoresRes.status === "fulfilled" ? ((scoresRes.value.cards ?? []) as UfcCard[]) : []);
+        setGames([]);
+      } else {
+        setGames(scoresRes.status === "fulfilled" ? ((scoresRes.value.games ?? []) as SportsGame[]) : []);
+        setUfcCards([]);
+      }
       setLoadingGames(false);
       setNews(newsRes.status === "fulfilled" ? ((newsRes.value.items ?? []) as NewsItem[]) : []);
       setLoadingNews(false);
@@ -125,8 +189,22 @@ export default function SportsPage() {
       <section className="max-w-7xl mx-auto px-6 py-8 sm:py-10">
         <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
           <article className="rounded-2xl border border-foreground/10 bg-card p-5 sm:p-6 shadow-sm">
-            <h2 className="text-lg font-semibold">{activeLeague.label} scores &amp; schedule</h2>
-            {loadingGames && games.length === 0 ? (
+            <h2 className="text-lg font-semibold">
+              {isUfc ? "UFC upcoming card" : `${activeLeague.label} scores & schedule`}
+            </h2>
+            {isUfc ? (
+              loadingGames && ufcCards.length === 0 ? (
+                <p className="mt-4 text-sm text-foreground/50">Loading fight card…</p>
+              ) : ufcCards.length === 0 ? (
+                <p className="mt-4 text-sm text-foreground/50">No upcoming UFC events found.</p>
+              ) : (
+                <div className="mt-4 flex max-h-[36rem] flex-col gap-6 overflow-y-auto pr-1">
+                  {ufcCards.map((card) => (
+                    <UfcCardBlock key={`${card.name}-${card.startTime}`} card={card} />
+                  ))}
+                </div>
+              )
+            ) : loadingGames && games.length === 0 ? (
               <p className="mt-4 text-sm text-foreground/50">Loading games…</p>
             ) : games.length === 0 ? (
               <p className="mt-4 text-sm text-foreground/50">No {activeLeague.label} games scheduled right now.</p>
