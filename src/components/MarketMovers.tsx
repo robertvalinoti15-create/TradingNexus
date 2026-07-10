@@ -13,17 +13,10 @@ function fmtPercent(n: number | null) {
   return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
 }
 
-function fmtVolume(n: number | null) {
-  if (n === null) return "—";
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return n.toLocaleString("en-US");
-}
-
 function MoverRow({ q }: { q: Quote }) {
   const isUp = (q.changePercent ?? 0) >= 0;
   return (
-    <li className="flex items-center justify-between gap-4 text-sm py-2">
+    <li className="flex items-center justify-between gap-4 text-sm py-2.5">
       <div className="min-w-0">
         <span className="font-medium">{q.symbol}</span>{" "}
         <span className="text-foreground/40 text-xs">{q.name}</span>
@@ -34,7 +27,6 @@ function MoverRow({ q }: { q: Quote }) {
             ? q.price.toLocaleString("en-US", { style: "currency", currency: q.currency ?? "USD" })
             : "—"}
         </span>
-        <span className="font-mono text-foreground/40 w-14 text-right">{fmtVolume(q.volume)}</span>
         <span className={`font-mono font-medium w-20 text-right ${isUp ? "text-emerald-500" : "text-red-500"}`}>
           {fmtPercent(q.changePercent)}
         </span>
@@ -42,6 +34,8 @@ function MoverRow({ q }: { q: Quote }) {
     </li>
   );
 }
+
+const VISIBLE_ROWS = 6;
 
 // Yahoo's live screener (v1/finance/screener) and batch-quote (v7/finance/
 // quote) endpoints require session-cookie auth and are otherwise rate-
@@ -78,8 +72,8 @@ export function MarketMovers() {
           </button>
         ))}
       </div>
-      <ul className="divide-y divide-foreground/10 max-h-[560px] overflow-y-auto pr-2">
-        {list.map((q) => (
+      <ul className="divide-y divide-foreground/10">
+        {list.slice(0, VISIBLE_ROWS).map((q) => (
           <MoverRow key={q.symbol} q={q} />
         ))}
       </ul>

@@ -112,7 +112,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-foreground/10">
+      <section className="border-t border-foreground/10 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.07),_transparent_45%)]">
         <div className="max-w-5xl w-full mx-auto px-6 py-16 grid grid-cols-1 sm:grid-cols-3 gap-8">
           {VALUE_PROPS.map((prop) => (
             <div key={prop.title}>
@@ -125,7 +125,13 @@ export default function HomePage() {
 
       <section className="border-t border-foreground/10">
         <div className="max-w-5xl w-full mx-auto px-6 py-16">
-          <h2 className="text-lg font-semibold mb-4">Biggest movers in the market</h2>
+          <div className="flex items-end justify-between gap-4 mb-1">
+            <h2 className="text-lg font-semibold">What&rsquo;s moving today</h2>
+            <Link href="/stocks" className="text-sm text-brand-blue hover:underline shrink-0">
+              See the full list →
+            </Link>
+          </div>
+          <p className="text-sm text-foreground/50 mb-4">A quick look at today&rsquo;s most active stocks.</p>
           <div className="border border-foreground/10 rounded-xl p-4">
             <MarketMovers />
           </div>
