@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useMarketNews } from "@/lib/useMarketNews";
 import { formatRelative } from "@/lib/formatRelative";
 
-type Market = "forex" | "crypto" | "index" | "futures";
+type Market = "forex" | "crypto" | "index" | "futures" | "bonds";
 
 const DESCRIPTIONS: Record<"all" | Market, string> = {
   all: "Real market news for stocks, indices, forex, and crypto — mixed from multiple outlets via Google News plus TradingEconomics' own wire, not filtered to your watchlist. For actual insider and institutional trading data, see SEC filings below.",
@@ -16,6 +16,8 @@ const DESCRIPTIONS: Record<"all" | Market, string> = {
     "Real index and broader equity news, mixed from multiple outlets via Google News plus TradingEconomics' own wire. Pick an instrument below for sector-wide coverage.",
   futures:
     "Real commodities and futures news, mixed from multiple outlets via Google News plus TradingEconomics' own wire. Pick an instrument below for sector-wide coverage.",
+  bonds:
+    "Real bond market and rates news, mixed from multiple outlets via Google News plus TradingEconomics' own wire. Pick an instrument below for sector-wide coverage.",
 };
 
 interface SectorTab {
@@ -47,6 +49,11 @@ const SECTOR_TABS: Record<Market, SectorTab[]> = {
     { label: "S&P 500", googleQuery: "S&P 500", tePath: "/united-states/stock-market" },
     { label: "Dow Jones", googleQuery: "Dow Jones", tePath: "/indu:ind" },
     { label: "Nasdaq", googleQuery: "Nasdaq", tePath: "/us100:ind" },
+  ],
+  bonds: [
+    { label: "US 10Y", googleQuery: "10 year treasury yield", tePath: "/united-states/government-bond-yield" },
+    { label: "Fed / FOMC", googleQuery: "Federal Reserve interest rate decision" },
+    { label: "Germany 10Y", googleQuery: "German bund yield", tePath: "/germany/government-bond-yield" },
   ],
 };
 

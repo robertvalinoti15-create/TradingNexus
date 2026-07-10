@@ -118,6 +118,10 @@ export function getIndices(): Promise<TEInstrument[]> {
   return scrapeListing("https://tradingeconomics.com/stocks");
 }
 
+export function getBonds(): Promise<TEInstrument[]> {
+  return scrapeListing("https://tradingeconomics.com/bonds");
+}
+
 export async function getTENews(path: string): Promise<TENewsItem[]> {
   const res = await fetch(`https://tradingeconomics.com${path}`, {
     headers: { "User-Agent": TE_UA },
