@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const PAGES = [
   { href: "/", label: "Home" },
   { href: "/news", label: "News" },
+  { href: "/sports", label: "Sports" },
   { href: "/stocks", label: "Stocks" },
   { href: "/commodities", label: "Commodities" },
   { href: "/forex", label: "Forex" },
