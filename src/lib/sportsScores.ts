@@ -26,6 +26,7 @@ interface EspnTeam {
   displayName?: string;
   abbreviation?: string;
   logo?: string;
+  logos?: { href?: string }[];
 }
 
 interface EspnCompetitor {
@@ -46,7 +47,7 @@ interface EspnEvent {
   competitions?: EspnCompetition[];
 }
 
-interface EspnScoreboardResponse {
+export interface EspnScoreboardResponse {
   events?: EspnEvent[];
 }
 
@@ -87,7 +88,7 @@ export const LEAGUE_KEYS = Object.keys(LEAGUES) as LeagueKey[];
 
 const cache = new Map<LeagueKey, { at: number; data: SportsGame[] }>();
 const CACHE_TTL_MS = 60_000;
-const ESPN_UA =
+export const ESPN_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
 async function fetchEspnScoreboard(source: EspnSource): Promise<EspnScoreboardResponse> {
@@ -104,12 +105,12 @@ function toTeam(competitor: EspnCompetitor | undefined): SportsTeam {
     name: competitor?.team?.displayName ?? "TBD",
     abbreviation: competitor?.team?.abbreviation ?? "",
     score: competitor?.score ?? null,
-    logo: competitor?.team?.logo,
+    logo: competitor?.team?.logo ?? competitor?.team?.logos?.[0]?.href,
     winner: Boolean(competitor?.winner),
   };
 }
 
-function parseEvents(json: EspnScoreboardResponse, competition?: string): SportsGame[] {
+export function parseEvents(json: EspnScoreboardResponse, competition?: string): SportsGame[] {
   const events = json.events ?? [];
   const games: SportsGame[] = [];
 
