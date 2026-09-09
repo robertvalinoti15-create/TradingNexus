@@ -13,7 +13,6 @@ const PAGES = [
   { href: "/crypto", label: "Crypto" },
   { href: "/indices", label: "Indices" },
   { href: "/bonds", label: "Bonds" },
-  { href: "/calendar", label: "Calendar" },
 ];
 
 export function SiteNav() {
