@@ -5,7 +5,11 @@ export const dynamic = "force-dynamic";
 // Same Groq setup as /api/search-ai — free tier, no credit card, OpenAI-
 // compatible endpoint. This route is multi-turn (full message history) and
 // page-aware, for the persistent chat widget rather than one-shot search.
-const MODEL = "llama-3.3-70b-versatile";
+//
+// llama-3.3-70b-versatile was retired by Groq on 2026-08-16 (started
+// returning HTTP 404 model_not_found); this is their recommended
+// replacement and is still on the free tier.
+const MODEL = "openai/gpt-oss-120b";
 
 interface ChatMessage {
   role: "user" | "assistant";

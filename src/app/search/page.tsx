@@ -118,10 +118,14 @@ function SearchPageContent() {
   }, [query]);
 
   useEffect(() => {
-    if (!query) {
+    function reset() {
       setAnswer("");
       setStatus("idle");
       setAnsweredAt("");
+    }
+
+    if (!query) {
+      reset();
       return;
     }
 
@@ -161,7 +165,7 @@ function SearchPageContent() {
           </p>
           {query ? (
             <div className="mt-1 flex flex-wrap gap-2 text-xs text-foreground/70">
-              <span className="rounded-full border border-foreground/15 bg-card px-3 py-1">Model: Llama 3.3 70B</span>
+              <span className="rounded-full border border-foreground/15 bg-card px-3 py-1">Model: GPT-OSS 120B</span>
               <span className="rounded-full border border-foreground/15 bg-card px-3 py-1">Mode: Live market assistant</span>
               {answeredAt ? <span className="rounded-full border border-foreground/15 bg-card px-3 py-1">Updated at {answeredAt}</span> : null}
             </div>

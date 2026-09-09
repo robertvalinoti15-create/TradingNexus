@@ -6,7 +6,11 @@ export const dynamic = "force-dynamic";
 // 1,000 req/day on this model) — a better fit for a personal app than
 // Gemini's free tier, which this replaced after repeatedly hitting a 429
 // quota error. Groq's API is OpenAI-compatible.
-const MODEL = "llama-3.3-70b-versatile";
+//
+// llama-3.3-70b-versatile was retired by Groq on 2026-08-16 (started
+// returning HTTP 404 model_not_found); this is their recommended
+// replacement and is still on the free tier.
+const MODEL = "openai/gpt-oss-120b";
 
 export async function GET(req: NextRequest) {
   const query = req.nextUrl.searchParams.get("q")?.trim();
