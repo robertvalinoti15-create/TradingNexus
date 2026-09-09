@@ -114,6 +114,7 @@ export default function SportsPage() {
   const [games, setGames] = useState<SportsGame[]>([]);
   const [ufcCards, setUfcCards] = useState<UfcCard[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [scoresError, setScoresError] = useState(false);
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingNews, setLoadingNews] = useState(true);
 
@@ -135,6 +136,13 @@ export default function SportsPage() {
       ]);
 
       if (cancelled) return;
+
+      // The API route answers 200 with an `error` field when the upstream
+      // feed fails, so check for it — otherwise a broken feed is
+      // indistinguishable from a day with no games on the schedule.
+      const scoresFailed =
+        scoresRes.status === "rejected" || Boolean(scoresRes.value?.error);
+      setScoresError(scoresFailed);
 
       if (league === "ufc") {
         setUfcCards(scoresRes.status === "fulfilled" ? ((scoresRes.value.cards ?? []) as UfcCard[]) : []);
@@ -195,6 +203,10 @@ export default function SportsPage() {
             {isUfc ? (
               loadingGames && ufcCards.length === 0 ? (
                 <p className="mt-4 text-sm text-foreground/50">Loading fight card…</p>
+              ) : scoresError ? (
+                <p className="mt-4 text-sm text-brand-red">
+                  Couldn&apos;t reach the scores feed. It should recover on the next refresh.
+                </p>
               ) : ufcCards.length === 0 ? (
                 <p className="mt-4 text-sm text-foreground/50">No upcoming UFC events found.</p>
               ) : (
@@ -206,6 +218,10 @@ export default function SportsPage() {
               )
             ) : loadingGames && games.length === 0 ? (
               <p className="mt-4 text-sm text-foreground/50">Loading games…</p>
+            ) : scoresError ? (
+              <p className="mt-4 text-sm text-brand-red">
+                Couldn&apos;t reach the scores feed. It should recover on the next refresh.
+              </p>
             ) : games.length === 0 ? (
               <p className="mt-4 text-sm text-foreground/50">No {activeLeague.label} games scheduled right now.</p>
             ) : (

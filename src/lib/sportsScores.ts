@@ -87,14 +87,16 @@ export const LEAGUE_KEYS = Object.keys(LEAGUES) as LeagueKey[];
 
 const cache = new Map<LeagueKey, { at: number; data: SportsGame[] }>();
 const CACHE_TTL_MS = 60_000;
-const ESPN_UA =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
+// Deliberately no User-Agent header. ESPN's edge (Akamai) started returning
+// 403 Access Denied for requests that send a browser UA without the rest of
+// a real browser's fingerprint — spoofing Chrome here is what got these
+// blocked. The same requests pass with no UA at all, so don't add one back.
 async function fetchEspnScoreboard(source: EspnSource): Promise<EspnScoreboardResponse> {
   const url = `https://site.api.espn.com/apis/site/v2/sports/${source.path}/scoreboard${
     source.params ? `?${source.params}` : ""
   }`;
-  const res = await fetch(url, { headers: { "User-Agent": ESPN_UA }, cache: "no-store" });
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`ESPN fetch failed: ${res.status}`);
   return (await res.json()) as EspnScoreboardResponse;
 }
@@ -145,6 +147,15 @@ export async function getSportsScores(league: LeagueKey): Promise<SportsGame[]> 
   const results = await Promise.allSettled(
     config.sources.map(async (source) => parseEvents(await fetchEspnScoreboard(source), source.competition))
   );
+
+  // If every upstream call failed, surface that instead of returning an
+  // empty list — "no games" and "the feed is broken" look identical to the
+  // user otherwise, which is how a 403 from ESPN went unnoticed as a
+  // plausible-looking off-season.
+  if (results.every((r) => r.status === "rejected")) {
+    const reason = results[0]?.status === "rejected" ? results[0].reason : undefined;
+    throw new Error(reason instanceof Error ? reason.message : "ESPN fetch failed");
+  }
 
   const games = results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
   games.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
@@ -219,7 +230,8 @@ export async function getUfcCards(): Promise<UfcCard[]> {
   if (ufcCache.data.length > 0 && Date.now() - ufcCache.at < CACHE_TTL_MS) return ufcCache.data;
 
   const url = "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard";
-  const res = await fetch(url, { headers: { "User-Agent": ESPN_UA }, cache: "no-store" });
+  // No User-Agent header here either — see fetchEspnScoreboard above.
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`ESPN fetch failed: ${res.status}`);
   const json = (await res.json()) as EspnMmaScoreboardResponse;
 
