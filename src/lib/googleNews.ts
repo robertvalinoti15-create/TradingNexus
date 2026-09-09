@@ -6,7 +6,7 @@ import type { NewsItem } from "./newsTypes";
 // aggregates real outlets (Reuters, Bloomberg, CNBC, MarketWatch, etc.),
 // which is what makes it useful as a second/third provider alongside
 // TradingEconomics' own wire instead of relying on a single source.
-const GN_UA =
+export const GN_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
 const cache = new Map<string, { at: number; data: NewsItem[] }>();

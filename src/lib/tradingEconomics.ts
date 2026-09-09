@@ -5,7 +5,7 @@ import type { TEInstrument, TENewsItem } from "./teTypes";
 // listing pages (commodities, currencies, crypto) server-render a plain HTML
 // table (no JS required) using identical markup, so one scraper covers all
 // three asset classes.
-const TE_UA =
+export const TE_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
 const listingCache = new Map<string, { at: number; data: TEInstrument[] }>();
