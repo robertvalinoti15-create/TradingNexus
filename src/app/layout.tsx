@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { SiteNav } from "@/components/SiteNav";
 import { ChatWidget } from "@/components/ChatWidget";
 import "./globals.css";
@@ -19,6 +20,7 @@ export default function RootLayout({
         <SiteNav />
         {children}
         <ChatWidget />
+        <Analytics />
       </body>
     </html>
   );
